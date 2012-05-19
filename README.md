@@ -81,7 +81,7 @@ http://github.com/pws21/isp-pyplugin
                     self.log.info("Username [%s] is OK" % username)
                     print xml2str(ok())
                 else:
-                    self.log.info("Username [%s] already exists" % username)  
+                    self.log.info("Username [%s] is invalid" % username)  
                     print xml2str(err(8, obj="invalidname"))
             else:
                 self.log.debug('ShowForm')
