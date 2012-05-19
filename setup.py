@@ -2,18 +2,18 @@ import os
 from setuptools import setup
 from isp import VERSION
 
-f = open(os.path.join(os.path.dirname(__file__), 'README'))
+f = open(os.path.join(os.path.dirname(__file__), 'README.md'))
 readme = f.read()
 f.close()
 
 setup(
-    name='isp-plugins',
+    name='isp-pyplugin',
     version=".".join(map(str, VERSION)),
     description='Small lib helps writing Plugins for ISP System products',
     long_description=readme,
     author="Pavel Shiryaev",
     author_email='pws@front.ru',
-    url='http://github.com/pws21/ips-plugins',
+    url='http://github.com/pws21/ips-pyplugin',
     py_modules=['isp'],
     install_requires=['setuptools','lxml'],
     zip_safe=False,

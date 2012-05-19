@@ -11,7 +11,7 @@ VERSION = '0.1'
 DFLT_ENC = "UTF-8" # кодировка по умолчанию
 # формат лог файла по умолчанию
 DFLT_FMT = '%(asctime)s - %(addon_name)s[%(script_type)s] - %(levelname)s - %(REMOTE_USER)s[%(SESSION_LEVEL)s] - %(message)s'
-DFLT_LOG = '/usr/local/ispmgr/var/isp-plugins.log' # лог файл по умолчанию
+DFLT_LOG = '/usr/local/ispmgr/var/isp-pyplugin.log' # лог файл по умолчанию
 # Переменные окружения
 ENV_KEYS = ['AUTHID',# уникальный номер сессии.
 'REMOTE_USER', # имя пользователя, вызвавшего функцию.

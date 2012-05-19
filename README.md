@@ -1,6 +1,6 @@
 isp-plugins
 ===========
-http://github.com/pws21/isp-plugins
+http://github.com/pws21/isp-pyplugin
 
 Что это такое?
 --------------
