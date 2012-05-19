@@ -32,36 +32,28 @@ http://github.com/pws21/isp-pyplugin
 Вот пример xml плагина чтобы сделать поле Name формы user.edit не редактируемым:
 
     #!/usr/bin/python
-    # -*- coding: UTF-8 -*-
     from isp import Plugin, xml2str, xml2pretty_str, get_tb
     import logging
-    import sys
 
     class ReadOnlyName(Plugin):
         def _main(self):
             xml = self.stdin_xml
-            nm = None
             id = xml.find("id")
-            # Не даем редактировать имя существующего пользователя
             if id is not None:
-                self.log.debug("ID exists, it's editing")
+                self.log.debug("ID exists")
                 elements = xml.xpath("/doc/metadata/form/page/field[@name='name']/input")
-                if elements.count == 1:
+                if elements.count > 0:
                     nm = elements[0]
-                if nm is not None:
-                    self.log.debug("Field found")
                     attrs = nm.attrib
                     attrs["readonly"] = "yes"
-
+                    self.log.debug("set readonly")
+                    
             print xml2pretty_str(xml)
 
     if __name__ == "__main__":
-        try:
-            pl = ReadOnlyName("ReadOnlyName", "xml")
-            pl.logger.setLevel(logging.DEBUG)
-            pl.execute()
-        except:
-            print get_tb()
+        pl = ReadOnlyName("ReadOnlyName", "xml")
+        pl.logger.setLevel(logging.DEBUG)
+        pl.execute()
     
 И пример cgi плагина, проверяющего при регистрации имя пользователя по собственным правилам.
 
