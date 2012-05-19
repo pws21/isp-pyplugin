@@ -1,4 +1,4 @@
-isp-plugins
+isp-pyplugin
 ===========
 http://github.com/pws21/isp-pyplugin
 
