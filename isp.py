@@ -6,8 +6,6 @@ from cgi import FieldStorage
 from lxml import etree as et
 import logging
 
-VERSION = '0.1'
-
 DFLT_ENC = "UTF-8" # кодировка по умолчанию
 # формат лог файла по умолчанию
 DFLT_FMT = '%(asctime)s - %(addon_name)s[%(script_type)s] - %(levelname)s - %(REMOTE_USER)s[%(SESSION_LEVEL)s] - %(message)s'
