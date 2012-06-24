@@ -25,7 +25,7 @@ ENV_KEYS = ['AUTHID',# уникальный номер сессии.
 
 _logger = logging.getLogger('isp')
 
-def err(code, msg=None, obj=None):
+def _xml_err(code, text=None, obj=None, msg=None):
     """Возвращяет XML об ошибке"""
     if type(code) == int:
         code = str(code)
@@ -33,10 +33,55 @@ def err(code, msg=None, obj=None):
     xmlerr = et.Element("error", code=code)
     if obj is not None:
         xmlerr.attrib["obj"] = obj
-    if msg is not None:
-        xmlerr.text = msg
+    if msg is not none:
+        xmlerr.attrib["msg"] = msg
+    if text is not None:
+        xmlerr.text = text
     xmldoc.append(xmlerr)
     return xmldoc
+
+class MgrError(Exception):
+    """Класс ошибки панели.
+       code - код ошибки
+       obj - объект с которым связана ошибка
+       msg - идентификатор сообщения
+       text - текст ошибки
+    """
+    def __init__(self, code, obj=None, msg=None, text=None):
+        self.code = code
+        self.obj = obj
+        self.msg = msg
+        self.text = text
+
+    def __str__(self):
+        return "MGR-%s [%s]: (%s) %s" % (code, obj, msg, text)
+
+    def as_xml(self):
+        return _xml_err(self.code, self.text, self.obj, self.msg)
+
+    def as_strxml(self):
+        return xml2str(self.as_xml())
+
+def query(func, keys, out='xml', mgr='ispmgr'):
+    """This function allows to make query to control pannel
+    func: function name
+    keys: key+value array of arrays
+    out: (optional) output type. Default is 'xml'. Possible
+    alternative is 'devel'
+    mgr: (optional) mgrname. Default is 'ispmgr'.
+    Позаимствовано из lib/mgr.py и модифицировано ибо out работал не правильно, с моей версией BillManager, во всяком случае.
+    Да и не хочется от этой либы зависть, т.к. она мало чего умеет.
+    Возвращяет str, т.к. out формат не обязательно xml, может захочется работать с json.
+    """
+    from commands import getstatusoutput
+    keys_str = ' '.join(map(lambda x: '='.join(x),keys))
+    q = (mgr, out, func, keys_str)
+    res,output = getstatusoutput('/usr/local/ispmgr/sbin/mgrctl -m %s -o %s %s %s' % q)
+    return output
+
+def err(code, msg=None, obj=None):
+    """Возвращяет XML об ошибке"""
+    return _xml_err(code, text=msg, obj=obj)
 
 def ok(text=None):
     """Возвращяет XML об успешном завершении"""
@@ -58,6 +103,10 @@ def xml2str(xml):
 def xml2pretty_str(xml):
     """Переводит lxml.etree.Element в форматированный string пригодный для отдачи в ISP"""
     return et.tostring(xml, encoding=DFLT_ENC, xml_declaration=True, pretty_print=True)
+
+def str2xml(text):
+    """Переводит str в lxml.etree.Element"""
+    return et.fromstring(text)
 
 def get_env():
     """Получить переменные окружения"""
@@ -88,6 +137,7 @@ class Plugin(object):
         self.env = get_env()
         self.env.update({'addon_name':name, 'script_type':stype})
         self.addLogFileHandler(DFLT_LOG, DFLT_FMT)
+        self.exception_hook = None
         if self.is_cgi():
             self.params = FieldStorage(keep_blank_values=True)
         if self.is_xml():
@@ -101,7 +151,7 @@ class Plugin(object):
     def is_xml(self):
         """Это плагин XML типа?"""
         return self.stype == 'xml'
-    
+
     def execute(self, *args, **kwargs):
         """Метод запускающий выполнение плагина"""
         self.log.debug("Start %s" % self.name)
@@ -109,14 +159,21 @@ class Plugin(object):
         try:
             self._main(*args, **kwargs)
         except Exception, e:
-            er = err('8', obj="erroroccured")
-            stack = get_tb()
-            self.log.error(stack)
-            print xml2str(er)
+            if exception_hook is not None:
+                exception_hook(me)
+            self.log.error(get_tb())
+            if type(e) == MgrError:
+                print e.as_strxml()
+            else:
+                er = err('8', obj="erroroccured")
+                print xml2str(er)
             status = "with errors"
         finally:
             self.log.debug("End %s %s" % (self.name,status))
-    
+
+    def set_exception_hook(self, callable_func):
+        self.exception_hook = callable_func
+
     def form_submited(self):
         """Определяет была ли нажата кнопка submit формы"""
         if self.is_cgi:
