@@ -1,5 +1,6 @@
 import os
 from setuptools import setup
+from isp import get_version
 
 f = open(os.path.join(os.path.dirname(__file__), 'README.md'))
 readme = f.read()
@@ -7,7 +8,7 @@ f.close()
 
 setup(
     name='isp-pyplugin',
-    version="0.1",
+    version = get_version(),
     description='Small lib helps writing Plugins for ISP System products',
     long_description=readme,
     author="Pavel Shiryaev",
