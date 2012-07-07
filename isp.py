@@ -36,7 +36,7 @@ def _xml_err(code, text=None, obj=None, msg=None):
     xmlerr = et.Element("error", code=code)
     if obj is not None:
         xmlerr.attrib["obj"] = obj
-    if msg is not none:
+    if msg is not None:
         xmlerr.attrib["msg"] = msg
     if text is not None:
         xmlerr.text = text
