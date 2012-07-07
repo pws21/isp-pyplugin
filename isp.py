@@ -162,8 +162,8 @@ class Plugin(object):
         try:
             self._main(*args, **kwargs)
         except Exception, e:
-            if exception_hook is not None:
-                exception_hook(me)
+            if self.exception_hook is not None:
+                self.exception_hook(me)
             self.log.error(get_tb())
             if type(e) == MgrError:
                 print e.as_strxml()
