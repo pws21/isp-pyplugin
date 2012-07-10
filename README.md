@@ -12,6 +12,10 @@ http://github.com/pws21/isp-pyplugin
 
     python setup.py install
 
+или если есть pip, то:
+
+    pip install git+https://github.com/pws21/isp-pyplugin.git
+
 Требует lxml и setuptools
 
 Как пользоваться?
